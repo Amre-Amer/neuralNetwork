@@ -1,4 +1,4 @@
-# Hand joint range limiters
+# Neural Network (pixel distance)
 
 | `Unity Neural network`             |
 | ------------------------------------------------------------ |
