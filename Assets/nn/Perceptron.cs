@@ -16,7 +16,6 @@ public class Perceptron : MonoBehaviour {
     int cntFrames;
     float delay = 1f;
     float delayTime;
-    float maxFrames = 10;
     float sumDiff = 1;
     struct DataType {
         public float[] inputs;
@@ -37,20 +36,6 @@ public class Perceptron : MonoBehaviour {
 	void Start () {
         numWeights = numInputs;
         initData();
-        //showProjectedLine();
-//        showWeights();
-//        forward();
-//        showProjectedLine();
-//        showWeights();
-//        forward();
-//        showWeights();
-//        graph();
-//        graph();
-        //graph();
-        //forward();
-        //graph();
-        //forward();
-        //graph();
 	}
 	
 	// Update is called once per frame
@@ -81,7 +66,7 @@ public class Perceptron : MonoBehaviour {
                 }
             }
         }
-        Debug.Log(cntFrames + " sumDiff:" + sumDiff+ " w(" + weights[0] + "," + weights[1] + ")" + "\n");
+        Debug.Log(cntFrames + " sumDiff:" + sumDiff+ " w(" + weights[0] + "," + weights[1] + ") " + weights[1]/weights[0] + "\n");
     }
 
     float predict(int d) {
@@ -105,12 +90,7 @@ public class Perceptron : MonoBehaviour {
         for (int w = 0; w < numWeights; w++) {
             weights[w] = Random.Range(-1, 1);
         }
-        //weights[0] = .5f;
-        //weights[1] = .75f;
-        lin = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        lin.transform.position = new Vector3(resX / 2, 0, resZ / 2);
-        lin.transform.localScale = new Vector3(1, 1, resX + resZ);
-        lin.transform.Rotate(0, 45, 0);
+        createLine();
         data = new DataType[numData];
         for (int d = 0; d < numData; d++) {
             float[] inputs = new float[numInputs];
@@ -124,6 +104,13 @@ public class Perceptron : MonoBehaviour {
             data[d] = dat;
             data[d].target = rateInputs(d);
         }
+    }
+
+    void createLine() {
+        lin = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        lin.transform.position = new Vector3(resX / 2, 0, resZ / 2);
+        lin.transform.localScale = new Vector3(1, 1, resX + resZ);
+        lin.transform.Rotate(0, 45, 0);
     }
 
     float rateInputs(int d) {
