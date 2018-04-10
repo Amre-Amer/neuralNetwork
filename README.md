@@ -3,6 +3,12 @@
 | `Unity Neural network`             |
 | ------------------------------------------------------------ |
 | ` `                                                          |
+
+Apr 9 2018
+
+DataSets and Correction:
+- DataType and DataSetType
+
 Organic Perceptrons:
 Correction factor = target / prediction.
 Back Propagation = Multiple each weight by the correction factor.
