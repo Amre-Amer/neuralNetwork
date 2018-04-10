@@ -7,7 +7,7 @@
 Apr 9 2018
 
 DataSets and Correction:
-- DataType and DataSetType
+DataType and DataSetType
 
 Organic Perceptrons:
 Correction factor = target / prediction.
