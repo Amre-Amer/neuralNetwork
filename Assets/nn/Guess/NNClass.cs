@@ -3,21 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct DataSetType
-{
-    public int numInputs;
-    public float[] inputData;
-    public float answer;
-    public float guess;
-    public DataSetType(int numInputs0)
-    {
-        numInputs = numInputs0;
-        inputData = new float[numInputs0];
-        answer = 0;
-        guess = 0;
-    }
-}
-
 public class NodeClass
 {
     public float value;
@@ -40,7 +25,7 @@ public class NNClass
     public int numNodes;
     public int numInputs;
     public int numWeights;
-    NodeClass[] nodes;
+    public NodeClass[] nodes;
     public DataSetType dataSet;
     public DataSetType[] dataSets;
     public GameObject[] inputGos;
@@ -62,6 +47,7 @@ public class NNClass
             nodes[n] = new NodeClass(false, numInputs);
         }
         nodes[numNodes] = new NodeClass(true, numNodes);
+        Debug.Log("NNClass numNodes:" + numNodes + " inputs:" + numInputs + "\n");
     }
 
     public bool LoadInputDataSet(DataSetType dataSet0)
@@ -129,6 +115,7 @@ public class NNClass
             for (int w = 0; w < nodes[n].weights.Length; w++)
             {
                 nodes[n].weights[w] = Random.Range(-1f, 1f);
+//                nodes[n].weights[w] = 1;
             }
         }
         return true;
@@ -160,7 +147,6 @@ public class NNClass
     public void correctWeights()
     {
         float correction = getAnswer() - getGuess();
-        //Debug.Log("correction(answer - guess)(" +  getAnswer() + "," + getGuess() + "):" + correction + "\n");
         correction *= learningRate;
         Debug.Log("correction:" + correction + "\n");
         float sumWeights = getSumWeights();
@@ -204,15 +190,12 @@ public class NNClass
             {
                 go = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 go.GetComponent<Renderer>().material.color = new Color(.75f, .25f, .25f);
-                //float a = (numNodes - numInputs) / 2f;
-                //float offset = dZInputs * a;
                 float z = -1 * i * dZInputs;
-                //z -= offset;
                 Vector3 pos = new Vector3(0, 0, z);
                 go.transform.position = pos;
                 inputGos[i] = go;
                 Vector3 posText = pos + new Vector3(0, go.transform.localScale.y / 2 + .1f, 0);
-                Text text = CreateText(posText, "");
+                Text text = CreateText(posText, "inputs");
                 inputTexts[i] = text;
             }
             inputTexts[i].text = dataSet.inputData[i].ToString("F2");
@@ -232,7 +215,12 @@ public class NNClass
             if (go == null)
             {
                 go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                go.GetComponent<Renderer>().material.color = new Color(.75f, .75f, .75f);
+                if (n < numNodes)
+                {
+                    go.GetComponent<Renderer>().material.color = new Color(.75f, .75f, .75f);
+                } else {
+                    go.GetComponent<Renderer>().material.color = new Color(.65f, .65f, .25f);
+                }
                 go.transform.localScale = new Vector3(1, .5f, 1);
                 float x = dXNodes + dXOutput;
                 float zMid = -1 * (numInputs - 1) / 2f * dZInputs;
@@ -247,7 +235,7 @@ public class NNClass
                 go.transform.position = pos;
                 nodeGos[n] = go;
                 Vector3 posText = pos + new Vector3(0, go.transform.localScale.y + .1f, 0);
-                Text text = CreateText(posText, "");
+                Text text = CreateText(posText, "nodes");
                 nodeTexts[n] = text;
             }
             nodeTexts[n].text = nodes[n].value.ToString("F2");
@@ -301,13 +289,10 @@ public class NNClass
             go.transform.position = pos;
             go.transform.LookAt(posA);
             nodes[n].weightGos[w] = go;
-            //
-            //pos = posNode;
-            //pos += go.transform.forward * 2;
             Vector3 posText = pos + new Vector3(0, go.transform.localScale.y + .1f, 0);
             float offset = -dist / 2 + 1.75f;
             posText += go.transform.forward * offset;
-            Text text = CreateText(posText, "");
+            Text text = CreateText(posText, "weight");
             nodes[n].weightTexts[w] = text;
         }
         updateWeightText(n, w);
@@ -320,7 +305,7 @@ public class NNClass
 
     Text CreateText(Vector3 pos, string txt)
     {
-        GameObject go = new GameObject("link text");
+        GameObject go = new GameObject("text " + txt);
         go.transform.SetParent(GameObject.Find("Canvas").transform);
         go.transform.Rotate(89, 0, 0);
         go.transform.position = pos;
@@ -337,86 +322,3 @@ public class NNClass
     }
 }
 
-public class DataSetsClass
-{
-    public float dXData = 3;
-    public float dZData = 2;
-    public int numDataSets;
-    public int numInputs;
-    public DataSetType[] dataSets;
-    public GameObject[,] dataGos;
-    public Text[,] dataTexts;
-    public DataSetsClass(int numDataSets0, int numInputs0)
-    {
-        numDataSets = numDataSets0;
-        numInputs = numInputs0;
-        dataSets = new DataSetType[numDataSets];
-    }
-
-    public bool LoadInputDataSet(DataSetType dataSet0, int d)
-    {
-        dataSets[d] = dataSet0;
-        return true;
-    }
-
-    public void Graph()
-    {
-        GraphDataSets();
-    }
-
-    void GraphDataSets()
-    {
-        if (dataGos == null)
-        {
-            //Debug.Log("numInputs:" + numInputs);
-            dataGos = new GameObject[numDataSets, numInputs];
-            dataTexts = new Text[numDataSets, numInputs];
-        }
-        for (int d = 0; d < numDataSets; d++)
-        {
-            DataSetType dataSet = dataSets[d];
-            if (dataSet.inputData != null)
-            {
-                //                    Debug.Log(":" + dataSet.inputData + " " + dataSet.inputData.Length + "\n");
-                for (int i = 0; i < numInputs; i++)
-                {
-                    //                        Debug.Log(":" + numInputs);
-                    GameObject go = dataGos[d, i];
-                    if (go == null)
-                    {
-                        go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        go.name = "dataSets dataGo " + d + " " + i;
-                        go.GetComponent<Renderer>().material.color = new Color(.25f, .25f, .25f);
-                        float x = (d - numDataSets) * dXData;
-                        float z = -1 * i * dZData;
-                        Vector3 pos = new Vector3(x, 0, z);
-                        go.transform.position = pos;
-                        dataGos[d, i] = go;
-                        Vector3 posText = pos + new Vector3(0, go.transform.localScale.y / 2 + .1f, 0);
-                        Text text = CreateText(posText, "");
-                        dataTexts[d, i] = text;
-                    }
-                    dataTexts[d, i].text = dataSet.inputData[i].ToString("F2");
-                }
-            }
-        }
-    }
-
-    Text CreateText(Vector3 pos, string txt)
-    {
-        GameObject go = new GameObject("text data");
-        go.transform.SetParent(GameObject.Find("Canvas").transform);
-        go.transform.Rotate(89, 0, 0);
-        go.transform.position = pos;
-        go.transform.localScale = new Vector3(.02f, .02f, .02f);
-        Text text = go.AddComponent<Text>();
-        RectTransform rect = go.GetComponent<RectTransform>();
-        Font font = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-        text.font = font;
-        text.name = go.name + ".";
-        text.color = Color.black;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.text = txt;
-        return text;
-    }
-}
