@@ -797,6 +797,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6fe8216d609740879f1e343c6444ef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numDataSets: 10
+  numNodes: 10
+  numInputs: 10
+  config: 2
+  scaleData: 0.12
 --- !u!4 &781776464
 Transform:
   m_ObjectHideFlags: 0

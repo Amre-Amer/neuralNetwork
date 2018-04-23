@@ -115,7 +115,7 @@ public class NNClass
             for (int w = 0; w < nodes[n].weights.Length; w++)
             {
                 nodes[n].weights[w] = Random.Range(-1f, 1f);
-//                nodes[n].weights[w] = 1;
+                nodes[n].weights[w] = 1;
             }
         }
         return true;
